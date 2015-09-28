@@ -1,0 +1,11 @@
+pre {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  border: 1px solid #cccccc;
+  font-size: 12px;
+  padding: 10px 12px;
+  background-color: #EEEEEE;
+  margin-right: 10px;
+}

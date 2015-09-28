@@ -5,8 +5,10 @@ import HTML5Backend from 'react-dnd/modules/backends/HTML5'
 
 class Parent extends React.Component {
   render () {
+    const kids = [0, 1, 2, 3, 4]
+
     return (
-      <Child />
+      <Child kids={kids} />
     )
   }
 }
