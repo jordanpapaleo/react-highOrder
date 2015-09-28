@@ -1,31 +1,50 @@
 export default {
-  "module": "root",
-  "children": [
+  module: "root",
+  children: [
     {
-      "module": "section",
-      "children": [
-        {
-          "module": "column",
-          "id": 10,
-          "parent_id": 9,
-          "children": []
-        },
-        {
-          "module": "video",
-          "id": 11,
-          "parent_id": 9,
-          "children": []
-        }
-      ],
-      "id": 9,
-      "parent_id": 0
+      "module":"section",
+      "children":
+        [
+          {
+             "module":"header",
+          },
+          {
+             "module":"paragraph",
+          },
+          {
+             "module":"image",
+          },
+          {
+            "module":"section",
+            "children":
+              [
+                {
+                   "module":"header",
+                },
+                {
+                   "module":"paragraph",
+                },
+                {
+                   "module":"image",
+                }
+              ]
+          },
+        ]
     },
     {
-      "module": "image",
-      "id": 12,
-      "parent_id": 0,
-      "children": []
-    }
+      "module":"section",
+      "children":[
+        {
+           "module":"column",
+        },
+        {
+           "module":"video",
+        }
+      ]
+    },
+    {
+      "module":"image"
+    },
   ]
 }
 

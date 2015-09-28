@@ -1,30 +1,34 @@
 import React, { Component, PropTypes } from 'react'
-import data from './data'
 import StateView from './StateView'
 import SortableNestedList from './SortableNestedList.jsx'
-
-var dragging
+import DragAccessor from './DragAccessor'
 
 class Sortable extends Component {
   constructor (props) {
     super(props)
 
+    console.log('Sortable props', props);
+
     this.state = {
-      data: data
+      data: populateTreeIds(props.data)
     }
 
     this.update = this.update.bind(this)
     this.sort = this.sort.bind(this)
   }
 
-  update (to) {
+  update () {
     var data = this.props.data
-    data.dragging = dragging
+    console.log('update data', data);
+
+    data.dragging = DragAccessor.getId()
     this.setState({data: data})
   }
 
   sort (to, from, placement) {
-    dragging = from
+    // console.log('App > sort', to, from)
+
+    DragAccessor.setId(from)
 
     if (from !== to) {
       var node = _remove(from)
@@ -53,13 +57,18 @@ class Sortable extends Component {
 
 export default Sortable
 
+
+
 var collection = {}
 
 // Removes a node from collection
 // returns the node itself
 function _remove (id) {
+  // console.log("_remove ID", id);
   // Get the node we're moving
   var node = collection[id]
+  // console.log(node);
+  // console.log('');
 
   var index = collection[node.parent_id].children.indexOf(node)
   // Remove node from it's current position
@@ -102,4 +111,34 @@ function _insert (node, to, index) {
 // Prepend node as first child
 function _prepend (node, dest) {
   _insert(node, dest, 0)
+}
+
+function populateTreeIds(tree) {
+
+  collection[0] = tree;
+
+  var startId = 1;
+  walk(tree.children, function(node, parent) {
+    node.id = startId;
+    if(parent) {
+      node.parent_id = parent.id;
+    } else { node.parent_id = 0
+    }
+    collection[startId] = node;
+    startId++;
+    return node;
+  });
+
+  return tree;
+}
+
+function walk(tree, fn, parent) {
+  tree.forEach(function(node) {
+    var node = fn(node, parent);
+    if(node.children) {
+      walk(node.children, fn, node);
+    } else {
+      node.children = [];
+    }
+  });
 }

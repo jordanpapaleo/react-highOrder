@@ -71,9 +71,9 @@ export default function SortableNested (Component) {
     },
 
     render () {
-      this.props.test = 123;
+      this.props.test = 123
 
-      return <Component {...this.props} {...this.state} />;
+      return <Component {...this.props} {...this.state} />
     }
   })
 

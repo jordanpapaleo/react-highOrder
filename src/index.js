@@ -5,6 +5,8 @@ import debug from 'debug'
 import React from 'react'
 // import Parent from './components/Parent'
 import Sortable from './components/Sortable'
+import data from './components/Sortable/data'
+
 
 const log = debug('application:bootstrap')
 
@@ -22,6 +24,6 @@ document.body.appendChild(applicationNode)
 
 log('mounting application')
 
-React.render(<Sortable test={123} />, applicationNode, () => {
+React.render(<Sortable data={data} />, applicationNode, () => {
   log('finished mounting application')
 })
