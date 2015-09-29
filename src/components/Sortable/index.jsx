@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import StateView from './StateView'
 import SortableNestedList from './SortableNestedList.jsx'
 import DragAccessor from './DragAccessor'
@@ -6,8 +6,6 @@ import DragAccessor from './DragAccessor'
 class Sortable extends Component {
   constructor (props) {
     super(props)
-
-    console.log('Sortable props', props);
 
     this.state = {
       data: populateTreeIds(props.data)
@@ -19,26 +17,20 @@ class Sortable extends Component {
 
   update () {
     var data = this.props.data
-    console.log('update data', data);
-
-    data.dragging = DragAccessor.getId()
+    data.dragging = DragAccessor.from
     this.setState({data: data})
   }
 
-  sort (to, from, placement) {
-    // console.log('App > sort', to, from)
+  sort () {
+    if (DragAccessor.from !== DragAccessor.to) {
+      var node = _remove(DragAccessor.from)
 
-    DragAccessor.setId(from)
-
-    if (from !== to) {
-      var node = _remove(from)
-
-      if (placement === 'before') {
-        _insertBefore(node, to)
-      } else if (placement === 'after') {
-        _insertAfter(node, to)
-      } else if (placement === 'append') {
-        _prepend(node, to)
+      if (DragAccessor.placement === 'before') {
+        _insertBefore(node, DragAccessor.to)
+      } else if (DragAccessor.placement === 'after') {
+        _insertAfter(node, DragAccessor.to)
+      } else if (DragAccessor.placement === 'append') {
+        _prepend(node, DragAccessor.to)
       }
     }
 
@@ -57,8 +49,6 @@ class Sortable extends Component {
 
 export default Sortable
 
-
-
 var collection = {}
 
 // Removes a node from collection
@@ -66,11 +56,11 @@ var collection = {}
 function _remove (id) {
   // console.log("_remove ID", id);
   // Get the node we're moving
-  var node = collection[id]
+  let node = collection[id]
   // console.log(node);
   // console.log('');
 
-  var index = collection[node.parent_id].children.indexOf(node)
+  let index = collection[node.parent_id].children.indexOf(node)
   // Remove node from it's current position
   collection[node.parent_id].children.splice(index, 1)
   return node
@@ -81,9 +71,9 @@ function _remove (id) {
 // references
 function _insertBefore (node, dest) {
   // Get parent of the node we're inserting before
-  var to = collection[dest].parent_id
+  let to = collection[dest].parent_id
   // Find index of node we're inserting before
-  var index = collection[to].children.indexOf(collection[dest])
+  let index = collection[to].children.indexOf(collection[dest])
   _insert(node, to, index)
 }
 
@@ -92,9 +82,9 @@ function _insertBefore (node, dest) {
 // references
 function _insertAfter (node, dest) {
   // Get parent of the node we're inserting before
-  var to = collection[dest].parent_id
+  let to = collection[dest].parent_id
   // Find index of node we're inserting before
-  var index = collection[to].children.indexOf(collection[dest])
+  let index = collection[to].children.indexOf(collection[dest])
   _insert(node, to, index + 1)
 }
 
@@ -113,32 +103,36 @@ function _prepend (node, dest) {
   _insert(node, dest, 0)
 }
 
-function populateTreeIds(tree) {
+function populateTreeIds (tree) {
+  collection[0] = tree
+  let startId = 1
 
-  collection[0] = tree;
+  walk(tree.children, function (node, parent) {
+    node.id = startId
 
-  var startId = 1;
-  walk(tree.children, function(node, parent) {
-    node.id = startId;
-    if(parent) {
-      node.parent_id = parent.id;
-    } else { node.parent_id = 0
+    if (parent) {
+      node.parent_id = parent.id
+    } else {
+      node.parent_id = 0
     }
-    collection[startId] = node;
-    startId++;
-    return node;
-  });
 
-  return tree;
+    collection[startId] = node
+    startId++
+
+    return node
+  })
+
+  return tree
 }
 
-function walk(tree, fn, parent) {
-  tree.forEach(function(node) {
-    var node = fn(node, parent);
-    if(node.children) {
-      walk(node.children, fn, node);
+function walk (tree, fn, parent) {
+  tree.forEach(function (node) {
+    node = fn(node, parent)
+
+    if (node.children) {
+      walk(node.children, fn, node)
     } else {
-      node.children = [];
+      node.children = []
     }
-  });
+  })
 }

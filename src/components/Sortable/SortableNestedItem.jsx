@@ -11,26 +11,18 @@ class SortableNestedItem extends Component {
   }
 
   dragStart (e) {
+    e.stopPropagation()
     this.dragged = e.currentTarget.dataset.id
+    DragAccessor.from = Number(this.dragged)
     e.dataTransfer.effectAllowed = 'move'
     e.dataTransfer.setData('text/html', null)
-  }
-
-  handleDrop (e) {
-    e.preventDefault()
-    this.props.sort(undefined, undefined)
   }
 
   dragEnd (e) {
     e.stopPropagation()
     e.preventDefault()
-    this.props.sort(undefined, undefined)
-  }
 
-  move (over, placement) {
-    var to = Number(over.dataset.id)
-    var from = DragAccessor.getId() || Number(this.dragged)
-    this.props.sort(to, from, placement)
+    this.props.sort()
   }
 
   dragOver (e) {
@@ -43,16 +35,15 @@ class SortableNestedItem extends Component {
     var relX = e.clientY - over.getBoundingClientRect().left
     var width = over.offsetWidth / 2
 
-    var placement
     if (relX > width) {
-      placement = 'append'
+      DragAccessor.placement = 'append'
     } else if (relY > height) {
-      placement = 'after'
+      DragAccessor.placement = 'after'
     } else if (relY < height) {
-      placement = 'before'
+      DragAccessor.placement = 'before'
     }
 
-    this.move(over, placement)
+    DragAccessor.to = Number(over.dataset.id)
   }
 
   getClassName () {
@@ -74,7 +65,7 @@ class SortableNestedItem extends Component {
         onDragEnd={this.dragEnd}
         onDragOver={this.dragOver}
         onDragStart={this.dragStart} data-id={this.props.data.id}>
-        {this.props.data.module}
+        {this.props.data.module + ' - ' + this.props.data.id}
         <ul>{ listItems } </ul>
       </li>
     )
